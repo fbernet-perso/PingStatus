@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PingStatus": {
+      "commandName": "Project",
+      "commandLineArgs": "c:\\temp\\ping.txt"
+    }
+  }
+}
