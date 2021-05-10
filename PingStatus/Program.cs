@@ -8,31 +8,34 @@ namespace PingStatus
 {
     class Program
     {
+        static string outputFile = @".\ping.txt";
+
         static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                outputFile = args[0];
+            }
             int i = 1;
             using (Ping myPing = new Ping())
             {
                 while (true)
                 {
+                    i++;
                     try
                     {
                         PingReply reply = myPing.Send("1.1.1.1", 1000);
                         if (reply?.Status != IPStatus.Success)
                         {
-                            string errorMessage = DateTime.Now.ToLongTimeString() + "\t" + reply?.Status;
-                            Console.Error.WriteLine(errorMessage);
-                            if (args.Length > 0)
-                            {
-                                File.AppendAllLines(args[0], new List<string> { errorMessage });
-                            }
+                            LogError(FormatOutput(reply?.Status.ToString()));
+                            i = 1;
                         }
                         else
                         {
-                            if (i == 50)
+                            if (i >= 50)
                             {
-                                Console.WriteLine(DateTime.Now.ToLongTimeString() + "\tOK");
-                                i = 0;
+                                Console.WriteLine(FormatOutput("OK"));
+                                i = 1;
                             }
                             else
                             {
@@ -40,20 +43,25 @@ namespace PingStatus
                             }
                             Thread.Sleep(500);
                         }
-                        i++;
                     }
                     catch (Exception ex)
                     {
-                        i = 0;
-                        string errorMessage = DateTime.Now.ToLongTimeString() + "\t" + ex.ToString();
-                        Console.Error.WriteLine(errorMessage);
-                        if (args.Length > 0)
-                        {
-                            File.AppendAllLines(args[0], new List<string> { errorMessage });
-                        }
+                        i = 1;
+                        LogError(FormatOutput(ex.ToString()));
                     }
                 }
             }
+        }
+
+        private static void LogError(string errorMessage)
+        {
+            Console.Error.WriteLine(errorMessage);
+            File.AppendAllLines(outputFile, new List<string> { errorMessage });
+        }
+
+        private static string FormatOutput(string message)
+        {
+            return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + "\t" + message;
         }
     }
 }
