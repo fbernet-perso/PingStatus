@@ -61,7 +61,7 @@ namespace PingStatus
 
         private static string FormatOutput(string message)
         {
-            return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + "\t" + message;
+            return DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + "\t" + message;
         }
     }
 }
